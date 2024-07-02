@@ -2,7 +2,7 @@
 
 namespace Store.Application.CQRS.Products.Commands;
 
-public class CreateOrUpdateProduct: IRequest<Guid>
+public class CreateOrUpdateProduct: IRequest<ProductCreatorInfo>
 {
 	public Guid ProductId { get; set; }
 	public string Title { get; set; }

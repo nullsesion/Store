@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Store.Application.CQRS.Products.Commands;
 using Store.Application.CQRS.Products.Queries;
-using System.Threading;
 
 namespace Store.Api.Apis
 {
@@ -25,14 +24,20 @@ namespace Store.Api.Apis
 				.WithOpenApi();
 		}
 
-		private async Task<ProductsVm> GetAllProducts(IMediator _mediator, CancellationToken cancellationToken, int Page = 1, int PageSize = 10)
+		private async Task<IResult> GetAllProducts(IMediator mediator, CancellationToken cancellationToken, int Page = 1, int PageSize = 10)
 		{
-			return await _mediator.Send(new GetProducts() { Page = Page, PageSize = PageSize },cancellationToken);
+			var result = await mediator.Send(new GetProducts() { Page = Page, PageSize = PageSize }, cancellationToken);
+			return Results.Json(result);
 		}
 
-		private async Task<Guid> CreateOrUpdateProduct(IMediator _mediator, CancellationToken cancellationToken,[FromBody] CreateOrUpdateProduct createOrUpdateProduct) 
+		private async Task<IResult> CreateOrUpdateProduct(IMediator mediator, CancellationToken cancellationToken,[FromBody] CreateOrUpdateProduct createOrUpdateProduct) 
 		{
-			return await _mediator.Send(createOrUpdateProduct,cancellationToken);
+			ProductCreatorInfo result = await mediator.Send(createOrUpdateProduct,cancellationToken);
+			if (!string.IsNullOrEmpty(result.IsError))
+			{
+				return Results.BadRequest(result.IsError);
+			}
+			return Results.Json(result.ProductId);
 		}
 	}
 }
