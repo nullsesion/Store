@@ -1,9 +1,6 @@
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Store.Api.Apis;
 using Store.Application.Abstraction;
-using Store.Application.CQRS.Products.Commands;
-using Store.Application.CQRS.Products.Queries;
 using Store.DataAccess;
 using Store.DataAccess.Repositories;
 
@@ -19,7 +16,10 @@ builder.Services.AddDbContext<IStoreDbContext,StoreDbContext>(
 builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
 builder.Services.AddMediatR(cfg 
 	=> cfg.RegisterServicesFromAssembly(typeof(IProductsRepository).Assembly)
-	);//ProductsVm
+	);
+
+
+builder.Services.AddTransient<IProductApi, ProductProductApi>();
 
 var app = builder.Build();
 
@@ -30,17 +30,11 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
-app.MapGet("/Api/v1/GetAllProducts", async (int Page,int PageSize, IMediator _mediator) 
-		=> await _mediator.Send(new GetProducts() { Page = Page, PageSize = PageSize })) //
-.WithName("GetAllProducts")
-.WithOpenApi();
-
-app.MapPost("/Api/v1/InsertOrUpdate", async ([FromBody] CreateOrUpdateProduct createOrUpdateProduct, IMediator _mediator) =>
+var apis = app.Services.GetServices<IProductApi>();
+foreach (var api in apis)
 {
-	return await _mediator.Send(createOrUpdateProduct);
-})
-	.WithName("InsertOrUpdate")
-	.WithOpenApi(); ;
-
+	if (api is null) throw new InvalidProgramException("Api not found");
+	api.Register(app);
+}
 
 app.Run();
