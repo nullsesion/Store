@@ -15,7 +15,7 @@ namespace Store.Application.CQRS.Products.Queries
 
 		public async Task<ProductsVm> Handle(GetProducts request, CancellationToken cancellationToken)
 		{
-			List<Product> p = await _productsRepository.GetAsync(cancellationToken);
+			List<Product> p = await _productsRepository.GetAsync(cancellationToken, request.Page, request.PageSize);
 
 			//add automapper
 			List<ProductVm> products = p

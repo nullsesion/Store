@@ -5,7 +5,7 @@ using Store.Domain;
 
 namespace Store.Application.CQRS.Products.Commands;
 
-public class CreateOrUpdateProductHandler: IRequestHandler<CreateOrUpdateProduct,Guid>
+public class CreateOrUpdateProductHandler: IRequestHandler<CreateOrUpdateProduct, ProductCreatorInfo>
 {
 	private readonly IProductsRepository _productsRepository;
 
@@ -14,17 +14,21 @@ public class CreateOrUpdateProductHandler: IRequestHandler<CreateOrUpdateProduct
 		_productsRepository = productsRepository;
 	}
 
-	public async Task<Guid> Handle(CreateOrUpdateProduct request, CancellationToken cancellationToken)
+	public async Task<ProductCreatorInfo> Handle(CreateOrUpdateProduct request, CancellationToken cancellationToken)
 	{
 		(Product product, string error) product = Product.Create(request.ProductId, request.Title, request.Price);
 		if (!string.IsNullOrEmpty(product.error))
 		{
-			throw new Exception(product.error);
+			return new ProductCreatorInfo()
+			{
+				ProductId = Guid.Empty
+				, IsError = product.error
+			};
 		}
 
 		await _productsRepository.InsertOrUpdateAsync(product.product,cancellationToken);
 		await _productsRepository.SaveAsync();
 
-		return product.product.ProductId;
+		return new ProductCreatorInfo() { ProductId = product.product.ProductId };
 	}
 }

@@ -11,13 +11,13 @@ public class ProductsRepository: AbstractRepository, IProductsRepository
 	{
 	}
 
-	public async Task<List<Product>> GetAsync(CancellationToken cancellationToken, int Page = 1, int PageSize = 10)
+	public async Task<List<Product>> GetAsync(CancellationToken cancellationToken, int page = 1, int pageSize = 10)
 	{
 		List<ProductEntity> productEntities = await _storeDbContext.ProductEntities
 			.AsNoTracking()
-			.Skip(PageSize * (Page - 1 > 0 ? Page - 1 : 0))
-			.Take(PageSize)
-			.ToListAsync();
+			.Skip(pageSize * (page - 1 > 0 ? page - 1 : 0))
+			.Take(pageSize)
+			.ToListAsync(cancellationToken);
 
 		List<Product> products = productEntities
 			.Select(x => Product.Create(x.ProductId, x.Title, x.Price).product)
@@ -27,13 +27,21 @@ public class ProductsRepository: AbstractRepository, IProductsRepository
 
 	public async Task<Guid> InsertOrUpdateAsync(Product product, CancellationToken cancellationToken)
 	{
-		ProductEntity productEntity = new ProductEntity()
+		ProductEntity? productEntityFromDb =
+			await _storeDbContext.ProductEntities.FirstOrDefaultAsync(x => x.ProductId == product.ProductId, cancellationToken);
+		if (productEntityFromDb is null)
 		{
-			ProductId = product.ProductId,
-			Title = product.Title,
-			Price = product.Price,
-		};
-		await _storeDbContext.ProductEntities.AddAsync(productEntity, cancellationToken);
+			ProductEntity productEntity = new ProductEntity()
+			{
+				ProductId = product.ProductId,
+				Title = product.Title,
+				Price = product.Price,
+			};
+			await _storeDbContext.ProductEntities.AddAsync(productEntity, cancellationToken);
+			return product.ProductId;
+		}
+		productEntityFromDb.Price = product.Price;
+		productEntityFromDb.Title = product.Title;
 		return product.ProductId;
 	}
 
