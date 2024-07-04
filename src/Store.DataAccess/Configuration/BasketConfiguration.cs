@@ -15,6 +15,12 @@ namespace Store.DataAccess.Configuration
 			builder.Property(e => e.BasketId)
 				.ValueGeneratedNever()
 				.HasColumnName("BasketId");
+
+			builder.Property(e => e.JsonProducts)
+				.HasColumnType("jsonb");
+
+			builder.Property(e => e.Sealed)
+				.HasDefaultValue(false);
 		}
 	}
 }
