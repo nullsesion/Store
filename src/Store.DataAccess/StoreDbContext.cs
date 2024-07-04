@@ -15,9 +15,13 @@ namespace Store.DataAccess
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			builder.ApplyConfiguration(new ProductConfiguration());
+			builder.ApplyConfiguration(new BasketConfiguration());
+			builder.ApplyConfiguration(new BasketProductConfiguration());
 			base.OnModelCreating(builder);
 		}
 		public DbSet<ProductEntity> ProductEntities { get; set; }
-		
+		public DbSet<BasketEntity> BasketEntity { get; set; }
+		public DbSet<BasketProductEntity> BasketProductEntities { get; set; }
+
 	}
 }

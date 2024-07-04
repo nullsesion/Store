@@ -1,0 +1,1 @@
+dotnet ef database update -s .\src\Store.Api -p .\src\Store.DataAccess
