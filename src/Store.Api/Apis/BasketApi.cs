@@ -17,8 +17,8 @@ namespace Store.Api.Apis
 			.WithOpenApi();
 
 			app.MapGet("/BasketApi/v1/GetAllBasket", GetAllBasket)
-				.Accepts<Guid>("application/json")
-				.Produces<BasketVm>(StatusCodes.Status200OK)
+				//.Accepts<Guid>("application/json")
+				.Produces<BasketsVm>(StatusCodes.Status200OK)
 				.WithName("GetAllBaskets")
 				.WithTags("Getters")
 				.WithOpenApi();
@@ -26,7 +26,7 @@ namespace Store.Api.Apis
 			app.MapGet("/BasketApi/v1/GetBasketByGuid", GetBasketByGuid)
 				.Accepts<Guid>("application/json")
 				.Produces<BasketVm>(StatusCodes.Status200OK)
-				.WithName("GetAllBaskets")
+				.WithName("GetBasketByGuid")
 				.WithTags("Getters")
 				.WithOpenApi();
 		}
