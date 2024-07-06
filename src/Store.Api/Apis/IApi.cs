@@ -1,6 +1,6 @@
 ﻿namespace Store.Api.Apis;
 
-public interface IProductApi
+public interface IApi
 {
 	void Register(WebApplication app);
 }

@@ -21,6 +21,9 @@ namespace Store.DataAccess.Configuration
 
 			builder.Property(e => e.Sealed)
 				.HasDefaultValue(false);
+
+			//builder.Property(e => e.ProductEntities)
+			builder.HasMany<BasketProductEntity>();
 		}
 	}
 }

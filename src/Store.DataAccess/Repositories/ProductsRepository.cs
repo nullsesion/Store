@@ -15,7 +15,7 @@ public class ProductsRepository: AbstractRepository, IProductsRepository
 	{
 		List<ProductEntity> productEntities = await _storeDbContext.ProductEntities
 			.AsNoTracking()
-			.Skip(pageSize * (page - 1 > 0 ? page - 1 : 0))
+			.Skip(GetOffsetStartPosition(page, pageSize))
 			.Take(pageSize)
 			.ToListAsync(cancellationToken);
 

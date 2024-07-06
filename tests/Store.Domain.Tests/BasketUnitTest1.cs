@@ -108,5 +108,28 @@ namespace Store.Domain.Tests
 
 			Assert.AreEqual(100, basket.TotalPrice());
 		}
+
+
+		[TestMethod]
+		public void Add_2Product_ProductCount2Returned()
+		{
+			//arrange
+			Basket basket = new Basket(Guid.NewGuid());
+			Guid productGuid = Guid.NewGuid();
+			(Product product, string error) product1 = Product.Create(productGuid, "Test 1", 100);
+			(Product product, string error) product2 = Product.Create(productGuid, "Test 1", 100);
+
+			//act
+			basket.AddBasketItem(new BasketItem() { Product = product1.product, Count = 2 });
+			basket.AddBasketItem(new BasketItem() { Product = product2.product, Count = 2 });
+
+			uint act = basket
+						.GetProductsPosition()
+						.First(x => x.productId == productGuid)
+						.Count;
+			//assert
+			uint exp = 4;
+			Assert.AreEqual(exp, act);
+		}
 	}
 }

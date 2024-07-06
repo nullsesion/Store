@@ -27,7 +27,7 @@ namespace Store.Application.CQRS.Products.Queries
 				})
 				.ToList();
 			/*
-			List<ProductVm> products = new List<ProductVm>()
+			List<ProductVm> Products = new List<ProductVm>()
 			{
 				new ProductVm(){ProductId = Guid.NewGuid(),Title = "Test1",Price = 100m},
 				new ProductVm(){ProductId = Guid.NewGuid(),Title = "Test2",Price = 140m},

@@ -27,5 +27,10 @@
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
+
+		protected int GetOffsetStartPosition(int page,int pageSize)
+		{
+			return pageSize * (page - 1 > 0 ? page - 1 : 0);
+		}
 	}
 }

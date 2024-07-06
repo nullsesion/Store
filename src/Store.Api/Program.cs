@@ -19,7 +19,8 @@ builder.Services.AddMediatR(cfg
 	);
 
 
-builder.Services.AddTransient<IProductApi, ProductProductApi>();
+builder.Services.AddTransient<IApi, ProductApi>();
+builder.Services.AddTransient<IApi, BasketApi>();
 
 var app = builder.Build();
 
@@ -30,10 +31,10 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
-var apis = app.Services.GetServices<IProductApi>();
+var apis = app.Services.GetServices<IApi>();
 foreach (var api in apis)
 {
-	if (api is null) throw new InvalidProgramException("Api not found");
+	if (api is null) throw new InvalidProgramException("ProductApi not found");
 	api.Register(app);
 }
 

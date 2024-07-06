@@ -6,18 +6,18 @@ using Store.Application.CQRS.Products.Queries;
 namespace Store.Api.Apis
 {
 	
-	public class ProductProductApi : IProductApi
+	public class ProductApi : IApi
 	{
 		public void Register(WebApplication app)
 		{
-			 app.MapGet("/Api/v1/GetAllProducts", GetAllProducts) 
+			 app.MapGet("/ProductApi/v1/GetAllProducts", GetAllProducts) 
 				.Produces<ProductsVm>(StatusCodes.Status200OK)
 				.WithName("GetAllProducts")
 				.WithTags("Getters")
 				.WithOpenApi();
 
-			app.MapPost("/Api/v1/InsertOrUpdate", CreateOrUpdateProduct)
-				.Accepts<GetProducts>("application/json")
+			app.MapPost("/ProductApi/v1/InsertOrUpdate", CreateOrUpdateProduct)
+				.Accepts<ProductCreatorInfo>("application/json")
 				.Produces<Guid>(StatusCodes.Status200OK)
 				.WithName("InsertOrUpdate")
 				.WithTags("Creators")

@@ -20,7 +20,16 @@
 			if (Sealed)
 				return (false, ERROR_EDIT_SEALED);
 
-			Position.Add(product);
+			BasketItem? pos = Position.FirstOrDefault(x => x.Product.ProductId == product.Product.ProductId);
+			if (pos == null)
+			{
+				Position.Add(product);
+			}
+			else
+			{
+				pos.Count = pos.Count + product.Count;
+			}
+			
 			return (true, string.Empty);
 		}
 
@@ -90,6 +99,12 @@
 			return (basket, string.Empty);
 		}
 		*/
+		public List<(Guid productId, uint Count)> GetProductsPosition()
+		{
+			return Position
+				.Select(x => (x.Product.ProductId, x.Count))
+				.ToList();
+		}
 
 		public decimal TotalPrice()
 		{
