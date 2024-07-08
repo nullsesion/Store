@@ -1,4 +1,9 @@
-﻿using Store.Application.Abstraction;
+﻿using Microsoft.EntityFrameworkCore;
+using Store.Application.Abstraction;
+using Store.Application.CQRS.Baskets.Commands;
+using Store.Application.CQRS.Baskets.Queries;
+using Store.DataAccess.Entities;
+using Store.Domain;
 
 namespace Store.DataAccess.Repositories
 {
@@ -7,6 +12,45 @@ namespace Store.DataAccess.Repositories
 		public BasketRepository(StoreDbContext storeDbContext) : base(storeDbContext)
 		{
 		}
+
+		public async Task<Basket?> Create(Basket basket)
+		{
+			BasketEntity? item = await _storeDbContext.BasketEntity.FirstOrDefaultAsync(x => x.BasketId == basket.BasketId);
+			if (item == null)
+			{
+				await _storeDbContext.BasketEntity.AddAsync(new BasketEntity()
+				{
+					BasketId = basket.BasketId
+				});
+				return basket;
+			}
+
+			return null;
+		}
+
+		/*
+		public async Task<bool> TrySealed(Guid basketId)
+		{
+			BasketEntity? item = await _storeDbContext.BasketEntity.FirstOrDefaultAsync(x => x.BasketId == basketId);
+			if (item == null)
+			{
+				return false;
+			}
+			item.Sealed = true;
+			return true;
+		}
+		*/
+
+		/*
+		public async Task<bool> TryAddProductToBasket(Basket basket)
+		{
+			basket.
+		}
+		*/
+		/*
+		BasketVm
+		BasketsVm
+		*/
 		/*
 		//добавление в корзину
 		//заморозка заказа 

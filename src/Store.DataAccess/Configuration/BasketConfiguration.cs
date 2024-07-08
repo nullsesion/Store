@@ -17,6 +17,7 @@ namespace Store.DataAccess.Configuration
 				.HasColumnName("BasketId");
 
 			builder.Property(e => e.JsonProducts)
+				.IsRequired(false)
 				.HasColumnType("jsonb");
 
 			builder.Property(e => e.Sealed)

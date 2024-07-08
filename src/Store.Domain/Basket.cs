@@ -12,7 +12,6 @@
 		public Basket(Guid basketId)
 		{
 			BasketId = basketId;
-			Position = new List<BasketItem>();
 		}
 
 		public (bool IsResult, string IsError) AddBasketItem(BasketItem product)
@@ -84,21 +83,6 @@
 			return (true, string.Empty);
 		}
 
-		/*
-		public (Basket basket, string error) CreateSealed(Guid basketId, IEnumerable<BasketItem> products)
-		{
-			Basket basket = new Basket(basketId);
-			//todo: add product
-
-			if (products.ToList().Count == 0)
-			{
-				return (basket, ERROR_BASKET_EMPTY);
-			}
-
-			Sealed = true;
-			return (basket, string.Empty);
-		}
-		*/
 		public List<(Guid productId, uint Count)> GetProductsPosition()
 		{
 			return Position

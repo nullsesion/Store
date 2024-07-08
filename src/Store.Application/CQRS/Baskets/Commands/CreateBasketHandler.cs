@@ -6,23 +6,32 @@ namespace Store.Application.CQRS.Baskets.Commands
 {
 	public class CreateBasketHandler: IRequestHandler<CreateBasket,BasketCreatorInfo>
 	{
-		private readonly IBasketRepository _basketRepositor;
+		private readonly IBasketRepository _basketRepository;
 
-		public CreateBasketHandler(IBasketRepository basketRepositor)
+		public CreateBasketHandler(IBasketRepository basketRepository)
 		{
-			_basketRepositor = basketRepositor;
+			_basketRepository = basketRepository;
 		}
 
 		public async Task<BasketCreatorInfo> Handle(CreateBasket request, CancellationToken cancellationToken)
 		{
-			Basket basket = new Basket(request.BasketId);
-			await Task.Delay(100);
-			BasketCreatorInfo basketCreatorInfo = new BasketCreatorInfo()
+			//request.BasketId
+			Basket? res = await _basketRepository.Create(new Basket(request.BasketId));
+			if (res == null)
 			{
-				BasketId = Guid.Empty
-				, IsError = "Not Implementation"
-			};
-			return basketCreatorInfo;
+				BasketCreatorInfo basketCreatorInfo = new BasketCreatorInfo()
+				{
+					BasketId = Guid.Empty, 
+					IsError = "Already exists",
+				};
+			}
+
+			await _basketRepository.SaveAsync();
+
+			return new BasketCreatorInfo()
+			{
+				BasketId = request.BasketId
+			}; 
 		}
 	}
 }
