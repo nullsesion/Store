@@ -1,11 +1,8 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using Store.DataAccess.Entities;
-using Store.Domain;
+﻿using Store.Application.Abstraction;
 
 namespace Store.DataAccess.Repositories
 {
-	public class BasketRepository : AbstractRepository
+	public class BasketRepository : AbstractRepository, IBasketRepository
 	{
 		public BasketRepository(StoreDbContext storeDbContext) : base(storeDbContext)
 		{

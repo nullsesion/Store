@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Store.Application.CQRS.Baskets.Commands;
 using Store.Application.CQRS.Baskets.Queries;
-using Store.Application.CQRS.Products.Commands;
 namespace Store.Api.Apis
 {
 	public class BasketApi: IApi
@@ -17,23 +16,21 @@ namespace Store.Api.Apis
 			.WithOpenApi();
 
 			app.MapGet("/BasketApi/v1/GetAllBasket", GetAllBasket)
-				//.Accepts<Guid>("application/json")
 				.Produces<BasketsVm>(StatusCodes.Status200OK)
 				.WithName("GetAllBaskets")
 				.WithTags("Getters")
 				.WithOpenApi();
 
 			app.MapGet("/BasketApi/v1/GetBasketByGuid", GetBasketByGuid)
-				.Accepts<Guid>("application/json")
 				.Produces<BasketVm>(StatusCodes.Status200OK)
 				.WithName("GetBasketByGuid")
 				.WithTags("Getters")
 				.WithOpenApi();
 		}
 
-		private async Task<IResult> GetAllBasket(IMediator mediator, CancellationToken cancellationToken)
+		private async Task<IResult> GetAllBasket(IMediator mediator, CancellationToken cancellationToken, int page = 1, int pageSize = 10 )
 		{
-			BasketsVm result = await mediator.Send(new GetBasketsList());
+			BasketsVm result = await mediator.Send(new GetBasketsList(){Page = page,PageSize = pageSize });
 			return Results.Json(result);
 		}
 

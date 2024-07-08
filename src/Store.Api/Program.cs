@@ -14,6 +14,7 @@ builder.Services.AddDbContext<IStoreDbContext,StoreDbContext>(
 	options => options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(StoreDbContext)))
 	); 
 builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
+builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.AddMediatR(cfg 
 	=> cfg.RegisterServicesFromAssembly(typeof(IProductsRepository).Assembly)
 	);

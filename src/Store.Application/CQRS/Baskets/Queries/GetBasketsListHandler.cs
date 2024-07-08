@@ -1,10 +1,18 @@
 ﻿using MediatR;
+using Store.Application.Abstraction;
 using Store.Application.CQRS.Products.Queries;
 
 namespace Store.Application.CQRS.Baskets.Queries
 {
 	public class GetBasketsListHandler: IRequestHandler<GetBasketsList, BasketsVm>
 	{
+		private readonly IBasketRepository _basketRepository;
+
+		public GetBasketsListHandler(IBasketRepository basketRepository)
+		{
+			_basketRepository = basketRepository;
+		}
+
 		public async Task<BasketsVm> Handle(GetBasketsList request, CancellationToken cancellationToken)
 		{
 			await Task.Delay(100);
