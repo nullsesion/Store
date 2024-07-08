@@ -17,7 +17,6 @@ namespace Store.Api.Apis
 				.WithOpenApi();
 
 			app.MapPost("/ProductApi/v1/InsertOrUpdate", CreateOrUpdateProduct)
-				.Accepts<ProductCreatorInfo>("application/json")
 				.Produces<Guid>(StatusCodes.Status200OK)
 				.WithName("InsertOrUpdate")
 				.WithTags("Creators")
@@ -32,12 +31,11 @@ namespace Store.Api.Apis
 
 		private async Task<IResult> CreateOrUpdateProduct(IMediator mediator, CancellationToken cancellationToken,[FromBody] CreateOrUpdateProduct createOrUpdateProduct) 
 		{
-			ProductCreatorInfo result = await mediator.Send(createOrUpdateProduct,cancellationToken);
-			if (!string.IsNullOrEmpty(result.IsError))
-			{
-				return Results.BadRequest(result.IsError);
-			}
-			return Results.Json(result.ProductId);
+			var result = await mediator.Send(createOrUpdateProduct,cancellationToken);
+			if (result.IsSuccess)
+				return Results.Json(result.Entity);
+
+			return Results.BadRequest(result.ErrorDetail);
 		}
 	}
 }

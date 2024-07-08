@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using System.Text;
+using Store.DomainShared;
 
 namespace Store.Domain.Tests
 {
@@ -13,10 +13,10 @@ namespace Store.Domain.Tests
 			decimal price = 0;
 
 			//act
-			(Product product, string error) product = Product.Create(Guid.NewGuid(), "Test 1", price);
+			DomainResponseEntity<Product> product = Product.Create(Guid.NewGuid(), "Test 1", price);
 
 			//assert
-			Assert.AreEqual(string.Empty,product.error);
+			Assert.AreEqual(true, product.IsSuccess);
 		}
 
 		[TestMethod]
@@ -27,10 +27,11 @@ namespace Store.Domain.Tests
 			string errorMessage = Product.ERROR_PRICE_STRING;
 
 			//act
-			(Product product, string error) product = Product.Create(Guid.NewGuid(), "Test 1", price);
+			var product = Product.Create(Guid.NewGuid(), "Test 1", price);
 
 			//assert
-			Assert.AreEqual(Product.ERROR_PRICE_STRING, product.error);
+			Assert.AreEqual(false, product.IsSuccess);
+			Assert.AreEqual(Product.ERROR_PRICE_STRING, product.ErrorDetail);
 		}
 
 		[TestMethod]
@@ -45,10 +46,11 @@ namespace Store.Domain.Tests
 			string title = sb.ToString();
 
 			//act
-			(Product product, string error) product = Product.Create(Guid.NewGuid(), title, Product.MIN_PRICE + 1);
+			DomainResponseEntity<Product> product = Product.Create(Guid.NewGuid(), title, Product.MIN_PRICE + 1);
 
 			//assert
-			Assert.AreEqual(Product.ERROR_TITLE_STRING,product.error);
+			Assert.AreEqual(false, product.IsSuccess);
+			Assert.AreEqual(Product.ERROR_TITLE_STRING,product.ErrorDetail);
 		}
 	}
 }

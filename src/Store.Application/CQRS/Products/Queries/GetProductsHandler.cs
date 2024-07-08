@@ -26,16 +26,7 @@ namespace Store.Application.CQRS.Products.Queries
 					, Price = x.Price
 				})
 				.ToList();
-			/*
-			List<ProductVm> Products = new List<ProductVm>()
-			{
-				new ProductVm(){ProductId = Guid.NewGuid(),Title = "Test1",Price = 100m},
-				new ProductVm(){ProductId = Guid.NewGuid(),Title = "Test2",Price = 140m},
-				new ProductVm(){ProductId = Guid.NewGuid(),Title = "Test3",Price = 100m},
-				new ProductVm(){ProductId = Guid.NewGuid(),Title = "Test4",Price = 130m}
-			};
-			await Task.Delay(100);
-			*/
+
 			return new ProductsVm() { Products = products };
 		}
 	}

@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Store.Application.CQRS.Baskets.Commands;
 using Store.Application.CQRS.Baskets.Queries;
+using Store.Domain;
+using Store.DomainShared;
+
 namespace Store.Api.Apis
 {
 	public class BasketApi: IApi
@@ -9,7 +12,6 @@ namespace Store.Api.Apis
 		public void Register(WebApplication app)
 		{
 			app.MapPost("/BasketApi/v1/Create", Create)
-				.Accepts<BasketCreatorInfo>("application/json")
 				.Produces<Guid>(StatusCodes.Status200OK)
 				.WithName("CreateBasket")
 				.WithTags("Creators")
@@ -46,12 +48,13 @@ namespace Store.Api.Apis
 
 		private async Task<IResult> Create(IMediator mediator, CancellationToken cancellationToken, [FromBody] CreateBasket createBasket)
 		{
-			BasketCreatorInfo result = await mediator.Send(createBasket, cancellationToken);
-			if (!string.IsNullOrEmpty(result.IsError))
+			DomainResponseEntity<Basket> result = await mediator.Send(createBasket, cancellationToken);
+			if (result.IsSuccess)
 			{
-				return Results.BadRequest(result.IsError);
+				return Results.Json(result.Entity);
 			}
-			return Results.Json(result.BasketId);
+			return Results.BadRequest(result.ErrorDetail);
+			
 		}
 	}
 }

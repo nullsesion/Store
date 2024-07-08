@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Store.DomainShared;
 
 namespace Store.Domain.Tests
 {
@@ -12,101 +8,138 @@ namespace Store.Domain.Tests
 		[TestMethod]
 		public void Try_Create_BasketWithotProduct_NULL_BasketReturned()
 		{
-			Basket basket = new Basket(Guid.NewGuid());
-			Assert.AreEqual(0, basket.Position.ToList().Count);
+			DomainResponseEntity<Basket> basket = Basket.Create(Guid.NewGuid());
+			Assert.AreEqual(true, basket.IsSuccess);
+			if (basket.Entity != null) 
+				Assert.AreEqual(0, basket.Entity.Position.ToList().Count);
+			else
+				Assert.Fail();
 		}
-
+		
 		[TestMethod]
 		public void Basket_2position_3product_2positionReturned()
 		{
-			Basket basket = new Basket(Guid.NewGuid());
-			(Product product, string error) product1 = Product.Create(Guid.NewGuid(), "Test 1", 100);
-			(Product product, string error) product2 = Product.Create(Guid.NewGuid(), "Test 2", 100);
-			
-			basket.AddBasketItem(new BasketItem() { Product = product1.product });
-			basket.AddBasketItem(new BasketItem() { Product = product2.product, Count = 2 });
-			
-			Assert.AreEqual(2, basket.Position.ToList().Count);
+			DomainResponseEntity<Basket> basket = Basket.Create(Guid.NewGuid());
+			var product1 = Product.Create(Guid.NewGuid(), "Test 1", 100);
+			var product2 = Product.Create(Guid.NewGuid(), "Test 2", 100);
+
+			if (basket.Entity != null)
+			{
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product1.Entity });
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product2.Entity, Count = 2 });
+
+				Assert.AreEqual(2, basket.Entity.Position.ToList().Count);
+			}
+			else
+				Assert.Fail();
 		}
 
 		[TestMethod]
 		public void Basket_TotalPrice_2Position_3Product_By100_300Returned()
 		{
-			Basket basket = new Basket(Guid.NewGuid());
-			(Product product, string error) product1 = Product.Create(Guid.NewGuid(), "Test 1", 100);
-			(Product product, string error) product2 = Product.Create(Guid.NewGuid(), "Test 2", 100);
+			var basket = Basket.Create(Guid.NewGuid());
+			var product1 = Product.Create(Guid.NewGuid(), "Test 1", 100);
+			var product2 = Product.Create(Guid.NewGuid(), "Test 2", 100);
+			if (basket.Entity != null)
+			{
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product1.Entity });
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product2.Entity, Count = 2 });
 
-			basket.AddBasketItem(new BasketItem() { Product = product1.product });
-			basket.AddBasketItem(new BasketItem() { Product = product2.product, Count = 2 });
-
-			decimal totalPrice = basket.TotalPrice();
-			Assert.AreEqual(300, totalPrice);
+				decimal totalPrice = basket.Entity.TotalPrice();
+				Assert.AreEqual(300, totalPrice);
+			}
+			else
+				Assert.Fail();
 		}
 
 		[TestMethod]
 		public void Basket_Sealed_Edit_ErrorReturned()
 		{
-			Basket basket = new Basket(Guid.NewGuid());
-			(Product product, string error) product1 = Product.Create(Guid.NewGuid(), "Test 1", 100);
+			var basket = Basket.Create(Guid.NewGuid());
+			var product1 = Product.Create(Guid.NewGuid(), "Test 1", 100);
 
-			basket.AddBasketItem(new BasketItem() { Product = product1.product , Count = 0 });
-			(bool isResult, string error) testSetSeal = basket.SetSealTheBasket();
-
-			Assert.AreEqual(false, testSetSeal.isResult);
+			if (basket.Entity != null)
+			{
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product1.Entity, Count = 0 });
+				var testSetSeal = basket.Entity.SetSealTheBasket();
+				Assert.AreEqual(false, testSetSeal.IsSuccess);
+			}
+			else
+				Assert.Fail();
 		}
 
 		[TestMethod]
 		public void Basket_Edit_After_Sealed_ErrorReturned()
 		{
-			Basket basket = new Basket(Guid.NewGuid());
-			(Product product, string error) product1 = Product.Create(Guid.NewGuid(), "Test 1", 100);
-			(Product product, string error) product2 = Product.Create(Guid.NewGuid(), "Test 2", 100);
+			var basket = Basket.Create(Guid.NewGuid());
+			var product1 = Product.Create(Guid.NewGuid(), "Test 1", 100);
+			var product2 = Product.Create(Guid.NewGuid(), "Test 2", 100);
 
-			basket.AddBasketItem(new BasketItem() { Product = product1.product });
-			(bool isResult, string error) testSetSeal = basket.SetSealTheBasket();
-			(bool IsResult, string IsError) testAfterSetSeal = basket.AddBasketItem(new BasketItem() { Product = product2.product });
+			if (basket.Entity != null)
+			{
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product1.Entity });
+				var testSetSeal = basket.Entity.SetSealTheBasket();
+				var testAfterSetSeal = basket.Entity.AddBasketItem(new BasketItem() { Product = product2.Entity });
 
-			Assert.AreEqual(false, testAfterSetSeal.IsResult);
+				Assert.AreEqual(false, testAfterSetSeal.IsSuccess);
+			}
+			else
+				Assert.Fail();
 		}
 
 		[TestMethod]
 		public void Basket_Product200Product2Count_Increment_After_Sealed_200Returned()
 		{
-			Basket basket = new Basket(Guid.NewGuid());
+			var basket = Basket.Create(Guid.NewGuid());
 			Guid productGuid = Guid.NewGuid();
-			(Product product, string error) product1 = Product.Create(productGuid, "Test 1", 100);
+			var product1 = Product.Create(productGuid, "Test 1", 100);
 
-			basket.AddBasketItem(new BasketItem() { Product = product1.product,Count = 2});
-			basket.SetSealTheBasket();
-			basket.IncrementPosition(productGuid);
+			if (basket.Entity != null)
+			{
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product1.Entity, Count = 2 });
+				basket.Entity.SetSealTheBasket();
+				basket.Entity.IncrementPosition(productGuid);
 
-			Assert.AreEqual(200, basket.TotalPrice());
+				Assert.AreEqual(200, basket.Entity.TotalPrice());
+			}
+			else
+				Assert.Fail();
 		}
 
 		[TestMethod]
 		public void Basket_Product200Product2Count_Increment__300Returned()
 		{
-			Basket basket = new Basket(Guid.NewGuid());
+			var basket = Basket.Create(Guid.NewGuid());
 			Guid productGuid = Guid.NewGuid();
-			(Product product, string error) product1 = Product.Create(productGuid, "Test 1", 100);
+			var product1 = Product.Create(productGuid, "Test 1", 100);
 
-			basket.AddBasketItem(new BasketItem() { Product = product1.product, Count = 2 });
-			basket.IncrementPosition(productGuid);
+			if (basket.Entity != null)
+			{
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product1.Entity, Count = 2 });
+				basket.Entity.IncrementPosition(productGuid);
 
-			Assert.AreEqual(300, basket.TotalPrice());
+				Assert.AreEqual(300, basket.Entity.TotalPrice());
+			}
+			else
+				Assert.Fail();
 		}
 
 		[TestMethod]
 		public void Basket_Product200Product2Count_Decrement_100Returned()
 		{
-			Basket basket = new Basket(Guid.NewGuid());
+			var basket = Basket.Create(Guid.NewGuid());
 			Guid productGuid = Guid.NewGuid();
-			(Product product, string error) product1 = Product.Create(productGuid, "Test 1", 100);
+			var product1 = Product.Create(productGuid, "Test 1", 100);
 
-			basket.AddBasketItem(new BasketItem() { Product = product1.product, Count = 2 });
-			basket.DecrementPosition(productGuid);
+			if (basket.Entity != null)
+			{
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product1.Entity, Count = 2 });
+				basket.Entity.DecrementPosition(productGuid);
 
-			Assert.AreEqual(100, basket.TotalPrice());
+				Assert.AreEqual(100, basket.Entity.TotalPrice());
+			}
+			else
+				Assert.Fail();
 		}
 
 
@@ -114,22 +147,27 @@ namespace Store.Domain.Tests
 		public void Add_2Product_ProductCount2Returned()
 		{
 			//arrange
-			Basket basket = new Basket(Guid.NewGuid());
+			var basket = Basket.Create(Guid.NewGuid());
 			Guid productGuid = Guid.NewGuid();
-			(Product product, string error) product1 = Product.Create(productGuid, "Test 1", 100);
-			(Product product, string error) product2 = Product.Create(productGuid, "Test 1", 100);
+			var product1 = Product.Create(productGuid, "Test 1", 100);
+			var product2 = Product.Create(productGuid, "Test 1", 100);
 
 			//act
-			basket.AddBasketItem(new BasketItem() { Product = product1.product, Count = 2 });
-			basket.AddBasketItem(new BasketItem() { Product = product2.product, Count = 2 });
+			if (basket.Entity != null)
+			{
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product1.Entity, Count = 2 });
+				basket.Entity.AddBasketItem(new BasketItem() { Product = product2.Entity, Count = 2 });
 
-			uint act = basket
-						.GetProductsPosition()
-						.First(x => x.productId == productGuid)
-						.Count;
-			//assert
-			uint exp = 4;
-			Assert.AreEqual(exp, act);
+				uint act = basket.Entity
+					.GetProductsPosition()
+					.First(x => x.productId == productGuid)
+					.Count;
+				//assert
+				uint exp = 4;
+				Assert.AreEqual(exp, act);
+			}
+			else
+				Assert.Fail();
 		}
 	}
 }

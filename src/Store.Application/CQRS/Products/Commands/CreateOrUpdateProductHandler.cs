@@ -2,10 +2,11 @@
 using Store.Application.Abstraction;
 using Store.Application.CQRS.Products.Queries;
 using Store.Domain;
+using Store.DomainShared;
 
 namespace Store.Application.CQRS.Products.Commands;
 
-public class CreateOrUpdateProductHandler: IRequestHandler<CreateOrUpdateProduct, ProductCreatorInfo>
+public class CreateOrUpdateProductHandler: IRequestHandler<CreateOrUpdateProduct, DomainResponseEntity<Product>>
 {
 	private readonly IProductsRepository _productsRepository;
 
@@ -14,21 +15,15 @@ public class CreateOrUpdateProductHandler: IRequestHandler<CreateOrUpdateProduct
 		_productsRepository = productsRepository;
 	}
 
-	public async Task<ProductCreatorInfo> Handle(CreateOrUpdateProduct request, CancellationToken cancellationToken)
+	public async Task<DomainResponseEntity<Product>> Handle(CreateOrUpdateProduct request, CancellationToken cancellationToken)
 	{
-		(Product product, string error) product = Product.Create(request.ProductId, request.Title, request.Price);
-		if (!string.IsNullOrEmpty(product.error))
+		DomainResponseEntity<Product> product = Product.Create(request.ProductId, request.Title, request.Price);
+		if (product.IsSuccess)
 		{
-			return new ProductCreatorInfo()
-			{
-				ProductId = Guid.Empty
-				, IsError = product.error
-			};
+			await _productsRepository.InsertOrUpdateAsync(product.Entity, cancellationToken);
+			await _productsRepository.SaveAsync();
 		}
 
-		await _productsRepository.InsertOrUpdateAsync(product.product,cancellationToken);
-		await _productsRepository.SaveAsync();
-
-		return new ProductCreatorInfo() { ProductId = product.product.ProductId };
+		return product;
 	}
 }

@@ -1,23 +1,48 @@
-﻿namespace Store.Domain
+﻿using Store.DomainShared;
+
+namespace Store.Domain
 {
 	public class Basket
 	{
 		const string ERROR_EDIT_SEALED = "error edit basket, basket sealed";
 		const string ERROR_BASKET_EMPTY = "error basket empty";
-		
+		const string ERROR_GUID = "error Guid";
+
 		public Guid BasketId { get; }
 		public bool Sealed { get; private set; }
 		public List<BasketItem> Position { get; private set; }
 
-		public Basket(Guid basketId)
+		private Basket(Guid basketId)
 		{
 			BasketId = basketId;
+			Position = new List<BasketItem>();
 		}
 
-		public (bool IsResult, string IsError) AddBasketItem(BasketItem product)
+		public static DomainResponseEntity<Basket> Create(Guid basketId)
+		{
+			if (basketId == Guid.Empty)
+			{
+				return new DomainResponseEntity<Basket>()
+					{
+						IsSuccess = false,
+						ErrorDetail = ERROR_GUID,
+					};
+			}
+			return new DomainResponseEntity<Basket>()
+				{
+					IsSuccess = true,
+					Entity = new Basket(basketId),
+				};
+		}
+
+		public DomainResponseEntity<Basket> AddBasketItem(BasketItem product)
 		{
 			if (Sealed)
-				return (false, ERROR_EDIT_SEALED);
+				return new DomainResponseEntity<Basket>()
+				{
+					IsSuccess = false,
+					ErrorDetail = ERROR_EDIT_SEALED,
+				};
 
 			BasketItem? pos = Position.FirstOrDefault(x => x.Product.ProductId == product.Product.ProductId);
 			if (pos == null)
@@ -29,19 +54,32 @@
 				pos.Count = pos.Count + product.Count;
 			}
 			
-			return (true, string.Empty);
+			return new DomainResponseEntity<Basket>()
+			{
+				IsSuccess = true,
+				Entity = this,
+			};
 		}
 
-		public (bool isResult, string error) RemoveBasketPosition(Guid productId)
+		public DomainResponseEntity<Basket> RemoveBasketPosition(Guid productId)
 		{
 			if (Sealed)
-				return (false, ERROR_EDIT_SEALED);
+				return new DomainResponseEntity<Basket>()
+				{
+					IsSuccess = false,
+					ErrorDetail = ERROR_EDIT_SEALED,
+				};
+			//return (false, ERROR_EDIT_SEALED);
 
 			Position
 				.ToList()
 				.RemoveAll(x => x.Product.ProductId == productId);
 
-			return (true, string.Empty);
+			return new DomainResponseEntity<Basket>()
+			{
+				IsSuccess = true,
+				Entity = this,
+			};
 		}
 
 		public bool IncrementPosition(Guid productId)
@@ -72,15 +110,23 @@
 			return false;
 		}
 
-		public (bool IsResult, string error) SetSealTheBasket()
+		public DomainResponseEntity<Basket> SetSealTheBasket()
 		{
 			Position = RemoveEmptyBasketItem();
 			if (Position.ToList().Count == 0)
 			{
-				return (false, ERROR_BASKET_EMPTY);
+				return new DomainResponseEntity<Basket>()
+				{
+					IsSuccess = false,
+					ErrorDetail = ERROR_BASKET_EMPTY,
+				};
 			}
 			Sealed = true;
-			return (true, string.Empty);
+			return new DomainResponseEntity<Basket>()
+			{
+				IsSuccess = true,
+				Entity = this,
+			};
 		}
 
 		public List<(Guid productId, uint Count)> GetProductsPosition()

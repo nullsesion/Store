@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using Store.Application.Abstraction;
 using Store.Domain;
+using Store.DomainShared;
 
 namespace Store.Application.CQRS.Baskets.Commands
 {
-	public class CreateBasketHandler: IRequestHandler<CreateBasket,BasketCreatorInfo>
+	public class CreateBasketHandler: IRequestHandler<CreateBasket, DomainResponseEntity<Basket>>
 	{
 		private readonly IBasketRepository _basketRepository;
 
@@ -13,25 +14,21 @@ namespace Store.Application.CQRS.Baskets.Commands
 			_basketRepository = basketRepository;
 		}
 
-		public async Task<BasketCreatorInfo> Handle(CreateBasket request, CancellationToken cancellationToken)
+		public async Task<DomainResponseEntity<Basket>> Handle(CreateBasket request, CancellationToken cancellationToken)
 		{
 			//request.BasketId
-			Basket? res = await _basketRepository.Create(new Basket(request.BasketId));
+			DomainResponseEntity<Basket> b = Basket.Create(request.BasketId);
+			
+			Basket? res = await _basketRepository.Create(b.Entity);
+			var basketCreatorInfo = new DomainResponseEntity<Basket>();
 			if (res == null)
-			{
-				BasketCreatorInfo basketCreatorInfo = new BasketCreatorInfo()
-				{
-					BasketId = Guid.Empty, 
-					IsError = "Already exists",
-				};
-			}
+				basketCreatorInfo.ErrorDetail = "Error create Basket";
+			else
+				basketCreatorInfo.IsSuccess = true;
 
 			await _basketRepository.SaveAsync();
 
-			return new BasketCreatorInfo()
-			{
-				BasketId = request.BasketId
-			}; 
+			return basketCreatorInfo;
 		}
 	}
 }

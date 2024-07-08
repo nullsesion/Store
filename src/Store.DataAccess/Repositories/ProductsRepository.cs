@@ -20,8 +20,10 @@ public class ProductsRepository: AbstractRepository, IProductsRepository
 			.ToListAsync(cancellationToken);
 
 		List<Product> products = productEntities
-			.Select(x => Product.Create(x.ProductId, x.Title, x.Price).product)
-			.ToList();
+			.Select(x => Product.Create(x.ProductId, x.Title, x.Price))
+			.Where(x=>x.IsSuccess && x.Entity != null)
+			.Select(x => x.Entity)
+			.ToList()!;
 		return products;
 	}
 
