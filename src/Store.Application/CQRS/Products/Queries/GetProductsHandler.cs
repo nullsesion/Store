@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using Store.Application.Abstraction;
 using Store.Domain;
+using Store.DomainShared;
 
 namespace Store.Application.CQRS.Products.Queries
 {
-	public class GetProductsHandler: IRequestHandler<GetProducts,ProductsVm>
+	public class GetProductsHandler: IRequestHandler<GetProducts, DomainResponseEntity<List<Product>>>
 	{
 		private readonly IProductsRepository _productsRepository;
 
@@ -13,21 +14,17 @@ namespace Store.Application.CQRS.Products.Queries
 			_productsRepository = productsRepository;
 		}
 
-		public async Task<ProductsVm> Handle(GetProducts request, CancellationToken cancellationToken)
+		public async Task<DomainResponseEntity<List<Product>>> Handle(GetProducts request, CancellationToken cancellationToken)
 		{
 			List<Product> p = await _productsRepository.GetAsync(cancellationToken, request.Page, request.PageSize);
 
-			//add automapper
-			List<ProductVm> products = p
-				.Select(x => new ProductVm()
-				{
-					ProductId = x.ProductId
-					, Title = x.Title
-					, Price = x.Price
-				})
-				.ToList();
+			DomainResponseEntity<List<Product>> listProducts = new DomainResponseEntity<List<Product>>();
+			if (p == null || p.Count == 0)
+				listProducts.ErrorDetail = "Not Found";
+			else
+				listProducts.Entity = p;
 
-			return new ProductsVm() { Products = products };
+			return listProducts;
 		}
 	}
 }

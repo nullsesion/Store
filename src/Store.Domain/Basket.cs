@@ -20,19 +20,15 @@ namespace Store.Domain
 
 		public static DomainResponseEntity<Basket> Create(Guid basketId)
 		{
+			var entity = new DomainResponseEntity<Basket>();
 			if (basketId == Guid.Empty)
+				entity.ErrorDetail = ERROR_GUID;
+			else
 			{
-				return new DomainResponseEntity<Basket>()
-					{
-						IsSuccess = false,
-						ErrorDetail = ERROR_GUID,
-					};
+				entity.IsSuccess = true;
+				entity.Entity = new Basket(basketId);
 			}
-			return new DomainResponseEntity<Basket>()
-				{
-					IsSuccess = true,
-					Entity = new Basket(basketId),
-				};
+			return entity;
 		}
 
 		public DomainResponseEntity<Basket> AddBasketItem(BasketItem product)
@@ -40,7 +36,6 @@ namespace Store.Domain
 			if (Sealed)
 				return new DomainResponseEntity<Basket>()
 				{
-					IsSuccess = false,
 					ErrorDetail = ERROR_EDIT_SEALED,
 				};
 
@@ -66,10 +61,8 @@ namespace Store.Domain
 			if (Sealed)
 				return new DomainResponseEntity<Basket>()
 				{
-					IsSuccess = false,
 					ErrorDetail = ERROR_EDIT_SEALED,
 				};
-			//return (false, ERROR_EDIT_SEALED);
 
 			Position
 				.ToList()
@@ -117,7 +110,6 @@ namespace Store.Domain
 			{
 				return new DomainResponseEntity<Basket>()
 				{
-					IsSuccess = false,
 					ErrorDetail = ERROR_BASKET_EMPTY,
 				};
 			}

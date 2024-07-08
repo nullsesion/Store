@@ -32,7 +32,7 @@ namespace Store.Api.Apis
 
 		private async Task<IResult> GetAllBasket(IMediator mediator, CancellationToken cancellationToken, int page = 1, int pageSize = 10 )
 		{
-			BasketsVm result = await mediator.Send(new GetBasketsList(){Page = page,PageSize = pageSize });
+			var result = await mediator.Send(new GetBasketsList(){Page = page,PageSize = pageSize });
 			return Results.Json(result);
 		}
 
@@ -42,7 +42,7 @@ namespace Store.Api.Apis
 			{
 				BasketId = basketId
 			};
-			BasketVm result = await mediator.Send(getBasketById,cancellationToken);
+			var result = await mediator.Send(getBasketById,cancellationToken);
 			return Results.Json(result);
 		}
 

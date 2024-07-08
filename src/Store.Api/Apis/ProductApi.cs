@@ -11,7 +11,6 @@ namespace Store.Api.Apis
 		public void Register(WebApplication app)
 		{
 			 app.MapGet("/ProductApi/v1/GetAllProducts", GetAllProducts) 
-				.Produces<ProductsVm>(StatusCodes.Status200OK)
 				.WithName("GetAllProducts")
 				.WithTags("Getters")
 				.WithOpenApi();

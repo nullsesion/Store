@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using Store.Domain;
+using Store.DomainShared;
 
 namespace Store.Application.CQRS.Baskets.Queries
 {
-	public class GetBasketById : IRequest<BasketVm>
+	public class GetBasketById : IRequest<DomainResponseEntity<Basket>>
 	{
 		public Guid BasketId { get; set; }
 	}

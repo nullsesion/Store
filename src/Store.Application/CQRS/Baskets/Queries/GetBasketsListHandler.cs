@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using Store.Application.Abstraction;
 using Store.Application.CQRS.Products.Queries;
+using Store.Domain;
+using Store.DomainShared;
 
 namespace Store.Application.CQRS.Baskets.Queries
 {
-	public class GetBasketsListHandler: IRequestHandler<GetBasketsList, BasketsVm>
+	public class GetBasketsListHandler: IRequestHandler<GetBasketsList, DomainResponseEntity<Basket>>
 	{
 		private readonly IBasketRepository _basketRepository;
 
@@ -13,8 +15,10 @@ namespace Store.Application.CQRS.Baskets.Queries
 			_basketRepository = basketRepository;
 		}
 
-		public async Task<BasketsVm> Handle(GetBasketsList request, CancellationToken cancellationToken)
+		public async Task<DomainResponseEntity<Basket>> Handle(GetBasketsList request, CancellationToken cancellationToken)
 		{
+			throw new NotImplementedException();
+			/*
 			await Task.Delay(100);
 			BasketVm basketVm = new BasketVm()
 			{
@@ -26,6 +30,7 @@ namespace Store.Application.CQRS.Baskets.Queries
 				Baskets = new List<BasketVm>() { basketVm }
 			};
 			return basketsVm;
+			*/
 		}
 	}
 }
