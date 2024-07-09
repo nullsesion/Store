@@ -12,19 +12,19 @@ namespace Store.Api.Apis
 		public void Register(WebApplication app)
 		{
 			app.MapPost("/BasketApi/v1/Create", Create)
-				.Produces<Guid>(StatusCodes.Status200OK)
+				//.Produces<Guid>(StatusCodes.Status200OK)
 				.WithName("CreateBasket")
 				.WithTags("Creators")
 			.WithOpenApi();
 
 			app.MapGet("/BasketApi/v1/GetAllBasket", GetAllBasket)
-				.Produces<BasketsVm>(StatusCodes.Status200OK)
+				//.Produces<BasketsVm>(StatusCodes.Status200OK)
 				.WithName("GetAllBaskets")
 				.WithTags("Getters")
 				.WithOpenApi();
 
 			app.MapGet("/BasketApi/v1/GetBasketByGuid", GetBasketByGuid)
-				.Produces<BasketVm>(StatusCodes.Status200OK)
+				//.Produces<BasketVm>(StatusCodes.Status200OK)
 				.WithName("GetBasketByGuid")
 				.WithTags("Getters")
 				.WithOpenApi();

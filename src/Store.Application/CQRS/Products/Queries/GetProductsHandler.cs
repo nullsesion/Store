@@ -20,9 +20,13 @@ namespace Store.Application.CQRS.Products.Queries
 
 			DomainResponseEntity<List<Product>> listProducts = new DomainResponseEntity<List<Product>>();
 			if (p == null || p.Count == 0)
+			{
 				listProducts.ErrorDetail = "Not Found";
-			else
-				listProducts.Entity = p;
+				return listProducts;
+			}
+
+			listProducts.IsSuccess = true;
+			listProducts.Entity = p;
 
 			return listProducts;
 		}

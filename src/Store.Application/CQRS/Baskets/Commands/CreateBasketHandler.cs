@@ -16,17 +16,13 @@ namespace Store.Application.CQRS.Baskets.Commands
 
 		public async Task<DomainResponseEntity<Basket>> Handle(CreateBasket request, CancellationToken cancellationToken)
 		{
-			//request.BasketId
 			DomainResponseEntity<Basket> b = Basket.Create(request.BasketId);
-			
-			Basket? res = await _basketRepository.Create(b.Entity);
-			var basketCreatorInfo = new DomainResponseEntity<Basket>();
-			if (res == null)
-				basketCreatorInfo.ErrorDetail = "Error create Basket";
-			else
-				basketCreatorInfo.IsSuccess = true;
-
-			await _basketRepository.SaveAsync();
+			DomainResponseEntity<Basket> basketCreatorInfo = await _basketRepository.Create(b.Entity);
+			if (basketCreatorInfo.IsSuccess)
+			{
+				await _basketRepository.SaveAsync();
+				return basketCreatorInfo;
+			}
 
 			return basketCreatorInfo;
 		}

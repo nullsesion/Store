@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Store.Application.CQRS.Products.Commands;
 using Store.Application.CQRS.Products.Queries;
+using Store.Domain;
+using Store.DomainShared;
 
 namespace Store.Api.Apis
 {
@@ -22,19 +24,24 @@ namespace Store.Api.Apis
 				.WithOpenApi();
 		}
 
-		private async Task<IResult> GetAllProducts(IMediator mediator, CancellationToken cancellationToken, int Page = 1, int PageSize = 10)
+		private async Task<IResult> GetAllProducts(IMediator mediator, CancellationToken cancellationToken, int page = 1, int pageSize = 10)
 		{
-			var result = await mediator.Send(new GetProducts() { Page = Page, PageSize = PageSize }, cancellationToken);
-			return Results.Json(result);
+			DomainResponseEntity<List<Product>> result = await mediator.Send(new GetProducts() { Page = page, PageSize = pageSize }, cancellationToken);
+
+			if(result.IsSuccess)
+				return Results.Json(result);
+
+			return Results.BadRequest(result);
 		}
 
 		private async Task<IResult> CreateOrUpdateProduct(IMediator mediator, CancellationToken cancellationToken,[FromBody] CreateOrUpdateProduct createOrUpdateProduct) 
 		{
 			var result = await mediator.Send(createOrUpdateProduct,cancellationToken);
+			//todo: add 200 or 204
 			if (result.IsSuccess)
-				return Results.Json(result.Entity);
+				return Results.Json(result);
 
-			return Results.BadRequest(result.ErrorDetail);
+			return Results.BadRequest(result);
 		}
 	}
 }

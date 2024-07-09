@@ -19,6 +19,7 @@ namespace Store.DataAccess.Configuration
 			builder.Property(e => e.ProductId).HasColumnName("ProductId");
 			builder.Property(e => e.Count).HasColumnName("Count");
 
+			/*
 			builder.HasOne(d => d.BasketEntity).WithMany()
 				.HasForeignKey(d => d.BasketId)
 				.OnDelete(DeleteBehavior.ClientSetNull)
@@ -28,6 +29,7 @@ namespace Store.DataAccess.Configuration
 				.HasForeignKey(d => d.ProductId)
 				.OnDelete(DeleteBehavior.ClientSetNull)
 				.HasConstraintName("basketproduct_product_fk");
+			*/
 		}
 	}
 }

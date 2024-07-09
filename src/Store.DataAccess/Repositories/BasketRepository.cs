@@ -4,30 +4,36 @@ using Store.Application.CQRS.Baskets.Commands;
 using Store.Application.CQRS.Baskets.Queries;
 using Store.DataAccess.Entities;
 using Store.Domain;
+using Store.DomainShared;
 
 namespace Store.DataAccess.Repositories
 {
 	public class BasketRepository : AbstractRepository, IBasketRepository
 	{
+		private const string BASKET_EXIST = "Basket Exist";
 		public BasketRepository(StoreDbContext storeDbContext) : base(storeDbContext)
 		{
 		}
-
-		public async Task<Basket?> Create(Basket basket)
+		public async Task<DomainResponseEntity<Basket>> Create(Basket basket)
 		{
-			BasketEntity? item = await _storeDbContext.BasketEntity.FirstOrDefaultAsync(x => x.BasketId == basket.BasketId);
+			DomainResponseEntity<Basket> domainResponseEntity = new DomainResponseEntity<Basket>();
+			BasketEntity? item =
+				await _storeDbContext
+					.BasketEntity
+					.FirstOrDefaultAsync(x => x.BasketId == basket.BasketId);
 			if (item == null)
 			{
 				await _storeDbContext.BasketEntity.AddAsync(new BasketEntity()
 				{
 					BasketId = basket.BasketId
 				});
-				return basket;
+				domainResponseEntity.IsSuccess = true;
+				domainResponseEntity.Entity = basket;
 			}
 
-			return null;
+			domainResponseEntity.ErrorDetail = BASKET_EXIST;
+			return domainResponseEntity;
 		}
-
 		/*
 		public async Task<bool> TrySealed(Guid basketId)
 		{
