@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Store.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class add_basket : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,11 +15,26 @@ namespace Store.DataAccess.Migrations
                 name: "Basket",
                 columns: table => new
                 {
-                    BasketId = table.Column<Guid>(type: "uuid", nullable: false)
+                    BasketId = table.Column<Guid>(type: "uuid", nullable: false),
+                    JsonProducts = table.Column<string>(type: "jsonb", nullable: true, defaultValueSql: "'{}'::jsonb"),
+                    Sealed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("basket_pk", x => x.BasketId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Product",
+                columns: table => new
+                {
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("product_pk", x => x.ProductId);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,15 +61,9 @@ namespace Store.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "basketproduct_basketid_idx",
+                name: "IX_BasketProduct_BasketId",
                 table: "BasketProduct",
-                columns: new[] { "BasketId", "ProductId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BasketProduct_productid",
-                table: "BasketProduct",
-                column: "ProductId");
+                column: "BasketId");
         }
 
         /// <inheritdoc />
@@ -65,6 +74,9 @@ namespace Store.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Basket");
+
+            migrationBuilder.DropTable(
+                name: "Product");
         }
     }
 }

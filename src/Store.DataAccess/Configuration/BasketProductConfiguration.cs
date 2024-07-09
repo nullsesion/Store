@@ -8,28 +8,21 @@ namespace Store.DataAccess.Configuration
 	{
 		public void Configure(EntityTypeBuilder<BasketProductEntity> builder)
 		{
-			builder.ToTable("BasketProduct");
 			builder.HasKey(e => new { e.ProductId, e.BasketId });
 
-			builder.HasIndex(e => e.ProductId, "IX_BasketProduct_productid");
+			builder.ToTable("BasketProduct");
 
-			builder.HasIndex(e => new { e.BasketId, e.ProductId }, "basketproduct_basketid_idx").IsUnique();
+			builder.HasOne(d => d.BasketEntity).WithMany(p => p.BasketProducts)
+					.HasForeignKey(d => d.BasketId)
+					.OnDelete(DeleteBehavior.ClientSetNull)
+					.HasConstraintName("basketproduct_basket_fk");
 
-			builder.Property(e => e.BasketId).HasColumnName("BasketId");
-			builder.Property(e => e.ProductId).HasColumnName("ProductId");
+			builder.HasOne(d => d.ProductEntity).WithMany(p => p.BasketProducts)
+					.HasForeignKey(d => d.ProductId)
+					.OnDelete(DeleteBehavior.ClientSetNull)
+					.HasConstraintName("basketproduct_product_fk");
+
 			builder.Property(e => e.Count).HasColumnName("Count");
-
-			/*
-			builder.HasOne(d => d.BasketEntity).WithMany()
-				.HasForeignKey(d => d.BasketId)
-				.OnDelete(DeleteBehavior.ClientSetNull)
-				.HasConstraintName("basketproduct_basket_fk");
-
-			builder.HasOne(d => d.ProductEntity).WithMany()
-				.HasForeignKey(d => d.ProductId)
-				.OnDelete(DeleteBehavior.ClientSetNull)
-				.HasConstraintName("basketproduct_product_fk");
-			*/
 		}
 	}
 }

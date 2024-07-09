@@ -13,5 +13,7 @@ namespace Store.DataAccess.Entities
 		public string Title { get; set; } = null!;
 
 		public decimal Price { get; set; }
+
+		public virtual ICollection<BasketProductEntity> BasketProducts { get; set; } = new List<BasketProductEntity>();
 	}
 }

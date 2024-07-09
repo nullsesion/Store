@@ -25,11 +25,12 @@ namespace Store.DataAccess.Migrations
             modelBuilder.Entity("Store.DataAccess.Entities.BasketEntity", b =>
                 {
                     b.Property<Guid>("BasketId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("BasketId");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("JsonProducts")
-                        .HasColumnType("jsonb");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValueSql("'{}'::jsonb");
 
                     b.Property<bool>("Sealed")
                         .ValueGeneratedOnAdd()
@@ -45,17 +46,9 @@ namespace Store.DataAccess.Migrations
             modelBuilder.Entity("Store.DataAccess.Entities.BasketProductEntity", b =>
                 {
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("ProductId");
-
-                    b.Property<Guid>("BasketId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("BasketId");
-
-                    b.Property<Guid?>("BasketEntityBasketId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BasketEntityBasketId1")
+                    b.Property<Guid>("BasketId")
                         .HasColumnType("uuid");
 
                     b.Property<long>("Count")
@@ -64,14 +57,7 @@ namespace Store.DataAccess.Migrations
 
                     b.HasKey("ProductId", "BasketId");
 
-                    b.HasIndex("BasketEntityBasketId");
-
-                    b.HasIndex("BasketEntityBasketId1");
-
-                    b.HasIndex(new[] { "ProductId" }, "IX_BasketProduct_productid");
-
-                    b.HasIndex(new[] { "BasketId", "ProductId" }, "basketproduct_basketid_idx")
-                        .IsUnique();
+                    b.HasIndex("BasketId");
 
                     b.ToTable("BasketProduct", (string)null);
                 });
@@ -79,10 +65,6 @@ namespace Store.DataAccess.Migrations
             modelBuilder.Entity("Store.DataAccess.Entities.ProductEntity", b =>
                 {
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("ProductId");
-
-                    b.Property<Guid?>("BasketEntityBasketId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Price")
@@ -91,36 +73,25 @@ namespace Store.DataAccess.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("Title");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("ProductId")
                         .HasName("product_pk");
-
-                    b.HasIndex("BasketEntityBasketId");
 
                     b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("Store.DataAccess.Entities.BasketProductEntity", b =>
                 {
-                    b.HasOne("Store.DataAccess.Entities.BasketEntity", null)
-                        .WithMany()
-                        .HasForeignKey("BasketEntityBasketId");
-
-                    b.HasOne("Store.DataAccess.Entities.BasketEntity", null)
-                        .WithMany("BasketProductEntities")
-                        .HasForeignKey("BasketEntityBasketId1");
-
                     b.HasOne("Store.DataAccess.Entities.BasketEntity", "BasketEntity")
-                        .WithMany()
+                        .WithMany("BasketProducts")
                         .HasForeignKey("BasketId")
                         .IsRequired()
                         .HasConstraintName("basketproduct_basket_fk");
 
                     b.HasOne("Store.DataAccess.Entities.ProductEntity", "ProductEntity")
-                        .WithMany()
+                        .WithMany("BasketProducts")
                         .HasForeignKey("ProductId")
                         .IsRequired()
                         .HasConstraintName("basketproduct_product_fk");
@@ -130,18 +101,14 @@ namespace Store.DataAccess.Migrations
                     b.Navigation("ProductEntity");
                 });
 
-            modelBuilder.Entity("Store.DataAccess.Entities.ProductEntity", b =>
-                {
-                    b.HasOne("Store.DataAccess.Entities.BasketEntity", null)
-                        .WithMany("ProductEntities")
-                        .HasForeignKey("BasketEntityBasketId");
-                });
-
             modelBuilder.Entity("Store.DataAccess.Entities.BasketEntity", b =>
                 {
-                    b.Navigation("BasketProductEntities");
+                    b.Navigation("BasketProducts");
+                });
 
-                    b.Navigation("ProductEntities");
+            modelBuilder.Entity("Store.DataAccess.Entities.ProductEntity", b =>
+                {
+                    b.Navigation("BasketProducts");
                 });
 #pragma warning restore 612, 618
         }

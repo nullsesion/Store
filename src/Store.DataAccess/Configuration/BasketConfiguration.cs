@@ -8,23 +8,17 @@ namespace Store.DataAccess.Configuration
 	{
 		public void Configure(EntityTypeBuilder<BasketEntity> builder)
 		{
-			builder.ToTable("Basket");
-
 			builder.HasKey(e => e.BasketId).HasName("basket_pk");
 
-			builder.Property(e => e.BasketId)
-				.ValueGeneratedNever()
-				.HasColumnName("BasketId");
+			builder.ToTable("Basket");
+
+			builder.Property(e => e.BasketId).ValueGeneratedNever();
 
 			builder.Property(e => e.JsonProducts)
-				.IsRequired(false)
+				.HasDefaultValueSql("'{}'::jsonb")
 				.HasColumnType("jsonb");
 
-			builder.Property(e => e.Sealed)
-				.HasDefaultValue(false);
-
-			//builder.Property(e => e.ProductEntities);
-			//builder.HasMany<BasketProductEntity>();
+			builder.Property(e => e.Sealed).HasDefaultValue(false);
 		}
 	}
 }
