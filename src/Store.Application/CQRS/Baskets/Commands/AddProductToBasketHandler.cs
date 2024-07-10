@@ -18,14 +18,12 @@ namespace Store.Application.CQRS.Baskets.Commands
 
 		public async Task<DomainResponseEntity<Basket>> Handle(AddProductToBasket request, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
-			/*
-			DomainResponseEntity<Basket> domainResponseEntityBasket = new DomainResponseEntity<Basket>();
-			var basket = await _basketRepository.GetByID(request.BasketId);
-			if (basket == null)
-				return domainResponseEntityBasket.ErrorDetail = "Basket Not Found";
-
-			*/
+			DomainResponseEntity<Basket> basket = await _basketRepository.GetByID(request.BasketId, cancellationToken);
+			if (basket.IsSuccess)
+			{
+				await _basketRepository.AddProduct(request.BasketId,request.ProductId,cancellationToken);
+			}
+			return basket;
 		}
 	}
 }

@@ -7,5 +7,6 @@ public interface IBasketRepository
 {
 	public Task<DomainResponseEntity<Basket>> Create(Basket basket, CancellationToken cancellationToken);
 	public Task<DomainResponseEntity<Basket>> GetByID(Guid id, CancellationToken cancellationToken);
+	public Task<DomainResponseEntity<Basket>> AddProduct(Guid basketId,Guid productId, CancellationToken cancellationToken);
 	Task SaveAsync();
 }

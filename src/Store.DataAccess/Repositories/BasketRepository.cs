@@ -90,6 +90,16 @@ namespace Store.DataAccess.Repositories
 			
 			return basket;
 		}
+
+		public async Task<DomainResponseEntity<Basket>> AddProduct(Guid basketId, Guid productId, CancellationToken cancellationToken)
+		{
+			BasketEntity basket = await _storeDbContext.BasketEntity.FirstAsync(x => x.BasketId == basketId);
+			throw new NotImplementedException();
+			//basket.BasketProducts
+			//var basket = Basket.Create(basket.Entity.BasketId);
+		}
+
+
 		/*
 		public async Task<bool> TrySealed(Guid basketId)
 		{
