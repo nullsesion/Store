@@ -8,25 +8,17 @@ namespace Store.Application.CQRS.Baskets.Queries
 {
 	public class GetBasketByIdHandler: IRequestHandler<GetBasketById, DomainResponseEntity<Basket>>
 	{
-		private readonly IBasketRepository _basketRepositor;
+		private readonly IBasketRepository _basketRepository;
 
-		public GetBasketByIdHandler(IBasketRepository basketRepositor)
+		public GetBasketByIdHandler(IBasketRepository basketRepository)
 		{
-			_basketRepositor = basketRepositor;
+			_basketRepository = basketRepository;
 		}
 
 		public async Task<DomainResponseEntity<Basket>> Handle(GetBasketById request, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
-			/*
-			await Task.Delay(100);
-			BasketVm basketVm = new BasketVm()
-			{
-				BasketId = request.BasketId
-				, Products = new List<ProductVm>()
-			};
-			return basketVm;
-			*/
+			DomainResponseEntity<Basket> basket = await _basketRepository.GetByID(request.BasketId, cancellationToken);
+			return basket;
 		}
 	}
 }

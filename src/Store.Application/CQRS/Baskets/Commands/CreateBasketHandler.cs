@@ -17,7 +17,7 @@ namespace Store.Application.CQRS.Baskets.Commands
 		public async Task<DomainResponseEntity<Basket>> Handle(CreateBasket request, CancellationToken cancellationToken)
 		{
 			DomainResponseEntity<Basket> b = Basket.Create(request.BasketId);
-			DomainResponseEntity<Basket> basketCreatorInfo = await _basketRepository.Create(b.Entity);
+			DomainResponseEntity<Basket> basketCreatorInfo = await _basketRepository.Create(b.Entity, cancellationToken);
 			if (basketCreatorInfo.IsSuccess)
 			{
 				await _basketRepository.SaveAsync();
